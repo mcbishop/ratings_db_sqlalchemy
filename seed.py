@@ -2,7 +2,7 @@
 import datetime
 from sqlalchemy import func
 from model import User
-# from model import Rating
+from model import Rating
 from model import Movie
 
 from model import connect_to_db, db
@@ -57,11 +57,10 @@ def load_movies():
         if (not movie_id or
             not title or
             not released_at):
-            print '=======\nIn the if condition.\nrow\n======'
             continue
         
         title = title[:-7]        
-        datetime.datetime.strptime(released_at, "%d-%b-%Y")
+        released_at = datetime.datetime.strptime(released_at, "%d-%b-%Y")
 
         # instantiate object Movie containing attributes from each row and commit to db
         movie = Movie(movie_id=movie_id,
@@ -75,6 +74,35 @@ def load_movies():
 
 def load_ratings():
     """Load ratings from u.data into database."""
+    print "Ratings"
+
+    # Delete all rows in table.
+    Rating.query.delete()
+
+    # Read u.data file and insert ratings data into the database.
+    # split rows divided by tab.
+    for row in open("seed_data/u.data"):
+        row = row.rstrip().split("\t")
+        (user_id,
+         movie_id,
+         score,
+         _) = row
+
+        # If any data is missing continue to the next interation
+        # of the loop.
+        if (not user_id or
+            not movie_id or
+            not score):
+            continue
+
+        # instantiate object Rating containing attributes from each row and commit to db
+        rating = Rating(user_id=user_id,
+                        movie_id=movie_id,
+                        score=score)
+
+        db.session.add(rating)
+        
+    db.session.commit()
 
 
 def set_val_user_id():
