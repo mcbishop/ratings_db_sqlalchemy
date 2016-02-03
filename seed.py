@@ -88,14 +88,14 @@ def load_ratings():
          score,
          _) = row
 
-        # If any data is missing continue to the next interation
+        # If any data is missing continue to the next iteration
         # of the loop.
         if (not user_id or
             not movie_id or
             not score):
             continue
 
-        # instantiate object Rating containing attributes from each row and commit to db
+        # instantiate object Rating, passing in attributes from each column and commit to db
         rating = Rating(user_id=user_id,
                         movie_id=movie_id,
                         score=score)
