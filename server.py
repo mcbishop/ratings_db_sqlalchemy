@@ -32,7 +32,22 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users=users)
 
+@app.route('/login', methods=[POST])
+    """Show user login form."""
+    return render_template("login_form.html")
+    
+@app.route('/login', methods=[GET])
+#process submission of login form. Query for username in db. If username matches 
+#pw, log them in.
 
+#to keep user logged in, add user ID to session. 
+
+#if user doesn't exist, ask if they want to create user.
+
+# if user pw is incorrect, flash message
+
+# if pw is correct, flash "Logged in", redirect to homepage,
+# TODO: update base.html to show flashed  message
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
