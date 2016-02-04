@@ -97,6 +97,21 @@ def login_user():
         return redirect('/login')
 
 
+@app.route('/logout', methods=["GET"])
+def show_logout_form():
+    """Shows logout form."""
+
+    return render_template("logout_form.html")
+
+
+@app.route('/logout', methods=["POST"])
+def logout_user():
+    """Removes user session data to logout user."""
+    
+    session['user_id'] = None
+    flash('You were successfully logged out.')
+    return redirect('/')
+
 
 @app.route('/users')
 def user_list():
