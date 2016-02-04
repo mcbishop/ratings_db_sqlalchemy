@@ -4,10 +4,19 @@
     <title>Ratings</title>
 </head>
 <body>
-  Ratings
-  <hr>
+    Ratings
+    <hr>
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flashes">
+            {% for message in messages %}
+                <div>{{ message }}</div>
+            {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}    
 
-  {% block content %} put your content here {% endblock %}
-  
-</body>
+    {% block content %} put your content here {% endblock %}
+      
+    </body>
 </html>

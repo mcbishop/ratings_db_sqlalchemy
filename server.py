@@ -22,7 +22,80 @@ app.jinja_env.undefined = StrictUndefined
 def index():
     """Homepage."""
 
-    return render_template("homepage.html")
+    return render_template('homepage.html')
+
+
+@app.route('/create_user', methods=['GET'])
+def show_create_user_form():
+    """Show user creation form."""
+    
+    return render_template("user_creation_form.html")
+
+
+@app.route('/create_user', methods=['POST'])
+def create_user():
+    """Add new user to database from create user form."""
+    
+    username = request.form.get('login_email')
+    password = request.form.get('password')    
+    age = request.form.get('age')
+    zipcode = request.form.get('zipcode')
+    print "======= USERNAME: %s, PASSWORD: %s, AGE: %s, ZIPCODE: %s" %(username, password, age, zipcode)
+
+    user = User(email=username,
+                password=password,
+                age=age,
+                zipcode=zipcode)
+    db.session.add(user)
+    db.session.commit()
+
+    flash('Created new user. Please log in.')
+
+    return redirect('/login')
+
+
+@app.route('/login', methods=['GET'])
+def show_login_form():
+    """Show user login form."""
+    return render_template('login_form.html')
+    
+@app.route('/login', methods=['POST'])
+def login_user():
+    """Process submission of login information.""" 
+    username = request.form.get('login_email')
+    password = request.form.get('password')
+    print "======= USERNAME = %s, PASSWORD: %s =======" % (username, password)
+
+    # Query for password by username
+    try:
+        (retrieve_password,
+         user_id) = db.session.query(User.password, User.user_id).filter_by(email=username).one()
+    except AttributeError:
+        # if user doesn't exist, flash unknown user message, and redirect to create user.
+        # flash('Created new user.')
+        # Check for presence of previous session. Return 0 if not found.
+        print "========== DIDN'T FIND USER ======="
+        counter = session.get('username_not_found', 0)
+        counter += 1
+        session['username_not_found'] = counter
+        flash('Username not found. Try again.')
+        # If user failed login 3 times, redirect to create user page.
+        if counter >= 3:
+            return redirect('/create_user')
+        else:
+            return redirect('/login')       
+
+    if retrieve_password == password:
+        # If username matches pw, log user in.
+        flash('You were successfully logged in.')
+        #to keep user logged in, add user ID to session. 
+        session['user_id'] = user_id
+        return redirect('/')
+    else:
+        # If user login exists, but password is incorrect, flash message and reload page.
+        flash ('Incorrect password. Try again.')
+        return redirect('/login')
+
 
 
 @app.route('/users')
@@ -32,22 +105,10 @@ def user_list():
     users = User.query.all()
     return render_template("user_list.html", users=users)
 
-@app.route('/login', methods=[POST])
-    """Show user login form."""
-    return render_template("login_form.html")
-    
-@app.route('/login', methods=[GET])
-#process submission of login form. Query for username in db. If username matches 
-#pw, log them in.
 
-#to keep user logged in, add user ID to session. 
 
-#if user doesn't exist, ask if they want to create user.
-
-# if user pw is incorrect, flash message
-
-# if pw is correct, flash "Logged in", redirect to homepage,
-# TODO: update base.html to show flashed  message
+    # TODO: update base.html to show flashed  message
+    # TODO: make email field require unique value
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
