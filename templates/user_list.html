@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    <h2>Movies</h2>
+    <h2>User</h2>
     <ul>
       {% for user in users|sort(attribute='email') %}
           {% if user.email %}
