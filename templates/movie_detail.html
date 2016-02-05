@@ -7,10 +7,10 @@
     <ul>
       {% for rating in movie.ratings %}
               <li>
-                <a href="/movie/{{ rating.movie.movie_id }}">
-                  {{ rating.user.email }}
-                </a>
-                <span>: {{ rating.score }}</span
+                  <a href="/user_detail/{{ rating.user.user_id }}">
+                    {{ rating.user.email }}
+                  </a>
+                  <span>: {{ rating.score }}</span
               </li>
       {% endfor %}
     </ul>
