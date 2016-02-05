@@ -4,6 +4,7 @@ from jinja2 import StrictUndefined
 
 from flask import Flask, render_template, redirect, request, flash, session
 from flask_debugtoolbar import DebugToolbarExtension
+from sqlalchemy.orm.exc import NoResultFound
 
 from model import User, Rating, Movie, connect_to_db, db
 
@@ -70,7 +71,7 @@ def login_user():
     try:
         (retrieve_password,
          user_id) = db.session.query(User.password, User.user_id).filter_by(email=username).one()
-    except AttributeError:
+    except NoResultFound:
         # if user doesn't exist, flash unknown user message, and redirect to create user.
         # flash('Created new user.')
         # Check for presence of previous session. Return 0 if not found.
@@ -90,7 +91,7 @@ def login_user():
         flash('You were successfully logged in.')
         #to keep user logged in, add user ID to session. 
         session['user_id'] = user_id
-        return redirect('/')
+        return redirect('/user_detail/%s' % (user_id))
     else:
         # If user login exists, but password is incorrect, flash message and reload page.
         flash ('Incorrect password. Try again.')
@@ -121,9 +122,24 @@ def user_list():
     return render_template("user_list.html", users=users)
 
 
+@app.route('/user_detail/<int:user_id>')
+def show_user_detail(user_id):
+    """Show user detail page."""
 
-    # TODO: update base.html to show flashed  message
-    # TODO: make email field require unique value
+    try:
+        user = User.query.filter_by(user_id=user_id).one()
+    except NoResultFound:
+        # if user doesn't exist, flash unknown user message, and redirect to create user.
+        # flash('Created new user.')
+        # Check for presence of previous session. Return 0 if not found.
+        print "========== DIDN'T FIND USER ======="
+        flash('Username not found.')
+        # If user id not found, redirect to user list page.
+        return redirect('/users')          
+
+    return render_template("user_detail.html", user=user)
+
+
 
 if __name__ == "__main__":
     # We have to set debug=True here, since it has to be True at the point
