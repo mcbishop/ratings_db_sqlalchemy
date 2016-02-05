@@ -114,6 +114,28 @@ def logout_user():
     return redirect('/')
 
 
+@app.route('/movie_detail/<int:movie_id>', methods=["GET"])
+def show_movie_detail(movie_id):
+    """Shows movie details."""
+    try:
+        movie = Movie.query.filter_by(movie_id=movie_id).one()
+    except NoResultFound:
+        print "========== DIDN'T FIND MOVIE ======="
+        flash('Movie not found.')
+        # If user id not found, redirect to user list page.
+        return redirect('/movies')          
+
+    return render_template("movie_detail.html", movie=movie)
+
+
+@app.route('/movies', methods=["GET"])
+def show_movie_list():
+    """Show list of movies."""
+
+    movies = Movie.query.all()
+    return render_template("movie_list.html", movies=movies)
+
+
 @app.route('/users')
 def user_list():
     """Show list of users."""

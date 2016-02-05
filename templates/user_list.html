@@ -1,14 +1,16 @@
 {% extends 'base.html' %}
 {% block content %}
 
-    <h2>Users</h2>
+    <h2>Movies</h2>
     <ul>
-      {% for user in users %}
+      {% for user in users|sort(attribute='email') %}
+          {% if user.email %}
           <li>
-              <a href="/users/{{ user.user_id }}">
+              <a href="/user_detail/{{ user.user_id }}">
                 {{ user.email }} ({{ user.user_id }})
               </a>
           </li>
+          {% endif}
       {% endfor %}
     </ul>
 

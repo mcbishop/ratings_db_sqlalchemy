@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% block content %}
+
+    <h2>Movies</h2>
+    <ul>
+      {% for movie in movies|sort(attribute='title') %}
+            <li>
+                <a href="/movie_detail/{{ movie.movie_id }}">
+                  {{ movie.title }}
+                </a>
+            </li>
+      {% endfor %}
+    </ul>
+
+{% endblock %}
